@@ -4,13 +4,13 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
     integrations:
-      app_store_connect: chcikhen_alarm_key_app
+      app_store_connect: bird_hen_alarm_key
     environment:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.alarmsapp.ChickAlarm
       vars:
-        APP_STORE_CONNECT_KEY: chcikhen_alarm_key_app
+        APP_STORE_CONNECT_KEY: bird_hen_alarm_key
         APP_STORE_APPLE_ID: 6754697142
         BUNDLE_ID: "com.alarmsapp.ChickAlarm"
         XCODE_PROJECT: "chickenAlarm.xcodeproj"
