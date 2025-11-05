@@ -408,7 +408,7 @@
 				DEVELOPMENT_TEAM = 7X47AV9RN8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Chick Hen Alarm";
+				INFOPLIST_KEY_CFBundleDisplayName = "Bird Hen Alarm";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -447,7 +447,7 @@
 				DEVELOPMENT_TEAM = 7X47AV9RN8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Chick Hen Alarm";
+				INFOPLIST_KEY_CFBundleDisplayName = "Bird Hen Alarm";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
