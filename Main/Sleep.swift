@@ -361,3 +361,4 @@ struct SleepView: View {
         motionManager.stopAccelerometerUpdates()
     }
 }
+ 

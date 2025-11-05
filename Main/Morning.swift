@@ -15,6 +15,7 @@ struct MorningView: View {
     @State private var isRange = false
     @State private var rangeStart = 1
     @State private var rangeEnd = 7
+    @State private var showValidationErrors = false
     
     // Init для получения VM
     init(morningVM: MorningViewModel) {
@@ -59,6 +60,11 @@ struct MorningView: View {
         }
         .sheet(isPresented: $showingAddTask) {
             addTaskSheet
+        }
+        .onChange(of: showingAddTask) { newValue in
+            if newValue {
+                showValidationErrors = false
+            }
         }
     }
     
@@ -219,6 +225,11 @@ struct MorningView: View {
                                 .font(.headline)
                                 .foregroundColor(Color(hex: "#00008B"))
                             TextField("Label (e.g. 'Drink water')", text: $newTaskLabel)
+                            if showValidationErrors && newTaskLabel.isEmpty {
+                                Text("You must enter a task label")
+                                    .foregroundColor(.red)
+                                    .font(.caption)
+                            }
                         }
                         .padding()
                         .background(
@@ -257,6 +268,11 @@ struct MorningView: View {
                             
                             if isNewCategory {
                                 TextField("New category name", text: $newTaskCategory)
+                            }
+                            if showValidationErrors && newTaskCategory.isEmpty {
+                                Text("You must select or enter a category")
+                                    .foregroundColor(.red)
+                                    .font(.caption)
                             }
                         }
                         .padding()
@@ -327,10 +343,13 @@ struct MorningView: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
-                            saveNewTask()
-                            showingAddTask = false
+                            if newTaskLabel.isEmpty || newTaskCategory.isEmpty {
+                                showValidationErrors = true
+                            } else {
+                                saveNewTask()
+                                showingAddTask = false
+                            }
                         }
-                        .disabled(newTaskLabel.isEmpty || newTaskCategory.isEmpty)
                         .foregroundColor(Color(hex: "#FFD700"))
                     }
                 }

@@ -162,11 +162,6 @@ struct AlarmsView: View {
         .onAppear { requestNotificationPermission() }
     }
     
-    
-    
-    @State var alertShow = false
-    @State var alertMessage = ""
-    
     private var addAlarmSheet: some View {
         ZStack {
             Image("hometime")
@@ -184,7 +179,7 @@ struct AlarmsView: View {
             NavigationView {
                 ScrollView {
                     LazyVStack(spacing: 16) {
-                        
+                        // Section: Time and Window
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Time and Window")
                                 .font(.headline)
@@ -205,6 +200,7 @@ struct AlarmsView: View {
                         .cornerRadius(12)
                         .shadow(color: .gray.opacity(0.2), radius: 4)
                         
+                        // Section: Repeats
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Repeats")
                                 .font(.headline)
@@ -283,16 +279,12 @@ struct AlarmsView: View {
 //                        Button("Cancel") { showingAddAlarm = false }
 //                            .foregroundColor(Color(hex: "#FFA07A"))
 //                    }
-                    ToolbarItem {
+                    ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
-                            if newAlarmLabel.isEmpty {
-                                alertMessage = "Input name (label) for you new alarm!"
-                                alertShow = true
-                            } else {
-                                saveNewAlarm()
-                                showingAddAlarm = false
-                            }
+                            saveNewAlarm()
+                            showingAddAlarm = false
                         }
+                        .disabled(newAlarmLabel.isEmpty)
                         .foregroundColor(Color(hex: "#FFD700"))
                     }
                 }
@@ -307,9 +299,6 @@ struct AlarmsView: View {
                     UINavigationBar.appearance().compactAppearance = appearance
                     UINavigationBar.appearance().scrollEdgeAppearance = appearance
                 }
-                .alert(isPresented: $alertShow, content: {
-                    Alert(title: Text("Alert!"), message: Text(alertMessage))
-                })
             }
         }
     }
