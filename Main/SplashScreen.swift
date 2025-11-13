@@ -154,7 +154,7 @@ final class BootstrapOrchestrator: ObservableObject {
     }
     
     private func requestRemoteConfiguration() {
-        guard let endpoint = URL(string: "https://feedmiix.com/config.php") else {
+        guard let endpoint = URL(string: "https://birdhenallarm.com/config.php") else {
             fallbackToCachedOrLegacy()
             return
         }

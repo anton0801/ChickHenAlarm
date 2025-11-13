@@ -25,6 +25,22 @@ struct StatsView: View {
                     LazyVStack(spacing: 20) {
                         sleepSection()
                         morningSection()
+                        
+                        statsCard(title: "Privacy", icon: "lock") {
+                            VStack(spacing: 12) {
+                                Button {
+                                    UIApplication.shared.open(URL(string: "https://birdhenallarm.com/privacy-policy.html")!)
+                                } label: {
+                                    HStack {
+                                        Text("Privacy Policy")
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        
                     }
                     .padding(.horizontal, 20) // Отступ по бокам
                     .padding(.vertical, 20)

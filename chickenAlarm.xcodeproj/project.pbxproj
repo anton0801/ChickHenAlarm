@@ -10,9 +10,18 @@
 		8F52033B2EC63B1000F1E0F2 /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = 8F52033A2EC63B1000F1E0F2 /* AppsFlyerLib */; };
 		8F52033E2EC63B6000F1E0F2 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8F52033D2EC63B6000F1E0F2 /* FirebaseCore */; };
 		8F5203402EC63B6000F1E0F2 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 8F52033F2EC63B6000F1E0F2 /* FirebaseMessaging */; };
+		8F5203672EC65AA800F1E0F2 /* NotificationServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8F5203602EC65AA800F1E0F2 /* NotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8F52036F2EC65ABC00F1E0F2 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 8F52036E2EC65ABC00F1E0F2 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8F5203652EC65AA800F1E0F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95A091E32EA63CFD00C60769 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8F52035F2EC65AA800F1E0F2;
+			remoteInfo = NotificationServiceExtension;
+		};
 		95A091F92EA63CFF00C60769 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 95A091E32EA63CFD00C60769 /* Project object */;
@@ -29,7 +38,22 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		8F52036C2EC65AA800F1E0F2 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				8F5203672EC65AA800F1E0F2 /* NotificationServiceExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		8F5203602EC65AA800F1E0F2 /* NotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		95A091EB2EA63CFD00C60769 /* chickenAlarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chickenAlarm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		95A091F82EA63CFF00C60769 /* chickenAlarmTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = chickenAlarmTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		95A092022EA63CFF00C60769 /* chickenAlarmUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = chickenAlarmUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,9 +67,24 @@
 			);
 			target = 95A091EA2EA63CFD00C60769 /* chickenAlarm */;
 		};
+		8F52036B2EC65AA800F1E0F2 /* Exceptions for "NotificationServiceExtension" folder in "NotificationServiceExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8F52035F2EC65AA800F1E0F2 /* NotificationServiceExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		8F5203612EC65AA800F1E0F2 /* NotificationServiceExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8F52036B2EC65AA800F1E0F2 /* Exceptions for "NotificationServiceExtension" folder in "NotificationServiceExtension" target */,
+			);
+			path = NotificationServiceExtension;
+			sourceTree = "<group>";
+		};
 		95A091ED2EA63CFD00C60769 /* chickenAlarm */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -72,6 +111,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		8F52035D2EC65AA800F1E0F2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F52036F2EC65ABC00F1E0F2 /* FirebaseMessaging in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		95A091E82EA63CFD00C60769 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -99,6 +146,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8F52036D2EC65ABC00F1E0F2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		95A091E22EA63CFD00C60769 = {
 			isa = PBXGroup;
 			children = (
@@ -106,6 +160,8 @@
 				95A091ED2EA63CFD00C60769 /* chickenAlarm */,
 				95A091FB2EA63CFF00C60769 /* chickenAlarmTests */,
 				95A092052EA63CFF00C60769 /* chickenAlarmUITests */,
+				8F5203612EC65AA800F1E0F2 /* NotificationServiceExtension */,
+				8F52036D2EC65ABC00F1E0F2 /* Frameworks */,
 				95A091EC2EA63CFD00C60769 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -116,6 +172,7 @@
 				95A091EB2EA63CFD00C60769 /* chickenAlarm.app */,
 				95A091F82EA63CFF00C60769 /* chickenAlarmTests.xctest */,
 				95A092022EA63CFF00C60769 /* chickenAlarmUITests.xctest */,
+				8F5203602EC65AA800F1E0F2 /* NotificationServiceExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -123,6 +180,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		8F52035F2EC65AA800F1E0F2 /* NotificationServiceExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8F5203682EC65AA800F1E0F2 /* Build configuration list for PBXNativeTarget "NotificationServiceExtension" */;
+			buildPhases = (
+				8F52035C2EC65AA800F1E0F2 /* Sources */,
+				8F52035D2EC65AA800F1E0F2 /* Frameworks */,
+				8F52035E2EC65AA800F1E0F2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				8F5203612EC65AA800F1E0F2 /* NotificationServiceExtension */,
+			);
+			name = NotificationServiceExtension;
+			packageProductDependencies = (
+				8F52036E2EC65ABC00F1E0F2 /* FirebaseMessaging */,
+			);
+			productName = NotificationServiceExtension;
+			productReference = 8F5203602EC65AA800F1E0F2 /* NotificationServiceExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		95A091EA2EA63CFD00C60769 /* chickenAlarm */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 95A0920C2EA63CFF00C60769 /* Build configuration list for PBXNativeTarget "chickenAlarm" */;
@@ -130,10 +210,12 @@
 				95A091E72EA63CFD00C60769 /* Sources */,
 				95A091E82EA63CFD00C60769 /* Frameworks */,
 				95A091E92EA63CFD00C60769 /* Resources */,
+				8F52036C2EC65AA800F1E0F2 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				8F5203662EC65AA800F1E0F2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				95A091ED2EA63CFD00C60769 /* chickenAlarm */,
@@ -202,9 +284,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2600;
+				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					8F52035F2EC65AA800F1E0F2 = {
+						CreatedOnToolsVersion = 16.4;
+					};
 					95A091EA2EA63CFD00C60769 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
@@ -239,11 +324,19 @@
 				95A091EA2EA63CFD00C60769 /* chickenAlarm */,
 				95A091F72EA63CFF00C60769 /* chickenAlarmTests */,
 				95A092012EA63CFF00C60769 /* chickenAlarmUITests */,
+				8F52035F2EC65AA800F1E0F2 /* NotificationServiceExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		8F52035E2EC65AA800F1E0F2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		95A091E92EA63CFD00C60769 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -268,6 +361,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		8F52035C2EC65AA800F1E0F2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		95A091E72EA63CFD00C60769 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -292,6 +392,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		8F5203662EC65AA800F1E0F2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8F52035F2EC65AA800F1E0F2 /* NotificationServiceExtension */;
+			targetProxy = 8F5203652EC65AA800F1E0F2 /* PBXContainerItemProxy */;
+		};
 		95A091FA2EA63CFF00C60769 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 95A091EA2EA63CFD00C60769 /* chickenAlarm */;
@@ -305,6 +410,66 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		8F5203692EC65AA800F1E0F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7X47AV9RN8;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotificationServiceExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationServiceExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alarmsapp.ChickAlarm.NotificationServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		8F52036A2EC65AA800F1E0F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7X47AV9RN8;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NotificationServiceExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = NotificationServiceExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alarmsapp.ChickAlarm.NotificationServiceExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		95A0920A2EA63CFF00C60769 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -597,6 +762,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8F5203682EC65AA800F1E0F2 /* Build configuration list for PBXNativeTarget "NotificationServiceExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8F5203692EC65AA800F1E0F2 /* Debug */,
+				8F52036A2EC65AA800F1E0F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		95A091E62EA63CFD00C60769 /* Build configuration list for PBXProject "chickenAlarm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -666,6 +840,11 @@
 			productName = FirebaseCore;
 		};
 		8F52033F2EC63B6000F1E0F2 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F52033C2EC63B6000F1E0F2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		8F52036E2EC65ABC00F1E0F2 /* FirebaseMessaging */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8F52033C2EC63B6000F1E0F2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
