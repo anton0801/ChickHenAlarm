@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8F52033B2EC63B1000F1E0F2 /* AppsFlyerLib in Frameworks */ = {isa = PBXBuildFile; productRef = 8F52033A2EC63B1000F1E0F2 /* AppsFlyerLib */; };
+		8F52033E2EC63B6000F1E0F2 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8F52033D2EC63B6000F1E0F2 /* FirebaseCore */; };
+		8F5203402EC63B6000F1E0F2 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 8F52033F2EC63B6000F1E0F2 /* FirebaseMessaging */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		95A091F92EA63CFF00C60769 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +35,22 @@
 		95A092022EA63CFF00C60769 /* chickenAlarmUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = chickenAlarmUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8F5203422EC63B6A00F1E0F2 /* Exceptions for "chickenAlarm" folder in "chickenAlarm" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 95A091EA2EA63CFD00C60769 /* chickenAlarm */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		95A091ED2EA63CFD00C60769 /* chickenAlarm */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8F5203422EC63B6A00F1E0F2 /* Exceptions for "chickenAlarm" folder in "chickenAlarm" target */,
+			);
 			path = chickenAlarm;
 			sourceTree = "<group>";
 		};
@@ -57,6 +76,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F5203402EC63B6000F1E0F2 /* FirebaseMessaging in Frameworks */,
+				8F52033E2EC63B6000F1E0F2 /* FirebaseCore in Frameworks */,
+				8F52033B2EC63B1000F1E0F2 /* AppsFlyerLib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +141,9 @@
 			);
 			name = chickenAlarm;
 			packageProductDependencies = (
+				8F52033A2EC63B1000F1E0F2 /* AppsFlyerLib */,
+				8F52033D2EC63B6000F1E0F2 /* FirebaseCore */,
+				8F52033F2EC63B6000F1E0F2 /* FirebaseMessaging */,
 			);
 			productName = chickenAlarm;
 			productReference = 95A091EB2EA63CFD00C60769 /* chickenAlarm.app */;
@@ -202,6 +227,10 @@
 			);
 			mainGroup = 95A091E22EA63CFD00C60769;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8F5203392EC63B1000F1E0F2 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */,
+				8F52033C2EC63B6000F1E0F2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 95A091EC2EA63CFD00C60769 /* Products */;
 			projectDirPath = "";
@@ -408,7 +437,10 @@
 				DEVELOPMENT_TEAM = 7X47AV9RN8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = chickenAlarm/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Bird Hen Alarm";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow to use your camera in Bird Hen Alarm";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Bird Hen Alarm may use your device identifier and limited usage data to understand how you interact with the app, measure performance, and deliver a more personalized alarm experience. With your permission, we may also use this data to show relevant promotions or partner offers that match your interests. This tracking helps us improve app quality, analyze alarm usage trends, and ensure our services remain free and relevant. Your data is handled securely, never sold, and is used only for analytics and personalization purposes in accordance with our Privacy Policy.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -447,7 +479,10 @@
 				DEVELOPMENT_TEAM = 7X47AV9RN8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = chickenAlarm/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Bird Hen Alarm";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow to use your camera in Bird Hen Alarm";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Bird Hen Alarm may use your device identifier and limited usage data to understand how you interact with the app, measure performance, and deliver a more personalized alarm experience. With your permission, we may also use this data to show relevant promotions or partner offers that match your interests. This tracking helps us improve app quality, analyze alarm usage trends, and ensure our services remain free and relevant. Your data is handled securely, never sold, and is used only for analytics and personalization purposes in accordance with our Privacy Policy.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -599,6 +634,43 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8F5203392EC63B1000F1E0F2 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AppsFlyerSDK/AppsFlyerFramework";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.17.7;
+			};
+		};
+		8F52033C2EC63B6000F1E0F2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8F52033A2EC63B1000F1E0F2 /* AppsFlyerLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F5203392EC63B1000F1E0F2 /* XCRemoteSwiftPackageReference "AppsFlyerFramework" */;
+			productName = AppsFlyerLib;
+		};
+		8F52033D2EC63B6000F1E0F2 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F52033C2EC63B6000F1E0F2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		8F52033F2EC63B6000F1E0F2 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8F52033C2EC63B6000F1E0F2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 95A091E32EA63CFD00C60769 /* Project object */;
 }
