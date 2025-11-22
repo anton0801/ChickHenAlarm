@@ -11,7 +11,7 @@ class ApplicationDelegate: UIResponder, UIApplicationDelegate, AppsFlyerLibDeleg
     private var attrData: [AnyHashable: Any] = [:]
     private let trackingActivationKey = UIApplication.didBecomeActiveNotification
     
-    private var deepLinkClickEvent: [String: Any] = [:]
+    private var deepLinkClickEvent: [AnyHashable: Any] = [:]
     private let hasSentAttributionKey = "hasSentAttributionData"
     private let timerKey = "deepLinkMergeTimer"
     

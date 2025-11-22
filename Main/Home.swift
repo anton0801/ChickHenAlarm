@@ -467,7 +467,6 @@ final class WebTrailGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
         injectViewportLock(into: webView)
     }
     
-    // Suppress JS alerts
     func webView(_ webView: WKWebView,
                  runJavaScriptAlertPanelWithMessage message: String,
                  initiatedByFrame frame: WKFrameInfo,
@@ -501,7 +500,6 @@ final class WebTrailGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
         }
     }
     
-    // Navigation decision
     func webView(_ webView: WKWebView,
                  decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
@@ -514,12 +512,10 @@ final class WebTrailGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
         knownGoodURL = url
         
         if url.scheme?.hasPrefix("http") == false {
-            if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url)
-                if webView.canGoBack { webView.goBack() }
-                decisionHandler(.cancel)
-                return
-            }
+            UIApplication.shared.open(url)
+            if webView.canGoBack { webView.goBack() }
+            decisionHandler(.cancel)
+            return
         }
         
         decisionHandler(.allow)
@@ -647,10 +643,17 @@ class BroodController: ObservableObject {
     }
     
     func closeAllAuxiliary(returnTo url: URL?) {
-        auxiliaryViews.forEach { $0.removeFromSuperview() }
-        auxiliaryViews.removeAll()
-        if let url = url { rootContainer.load(URLRequest(url: url)) }
-        else if rootContainer.canGoBack { rootContainer.goBack() }
+        if !auxiliaryViews.isEmpty {
+            if let topExtra = auxiliaryViews.last {
+                topExtra.removeFromSuperview()
+                auxiliaryViews.removeLast()
+            }
+            if let trail = url {
+                rootContainer.load(URLRequest(url: trail))
+            }
+        } else if rootContainer.canGoBack {
+            rootContainer.goBack()
+        }
     }
 }
 

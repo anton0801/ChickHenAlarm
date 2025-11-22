@@ -78,14 +78,15 @@ final class BootstrapOrchestrator: ObservableObject {
             return
         }
         
-        if shouldRequestPushPermission() {
-            shouldShowPushPrompt = true
-        } else {
-            requestRemoteConfiguration()
+        if targetWebURL == nil {
+            if !UserDefaults.standard.bool(forKey: "accepted_notifications") && !UserDefaults.standard.bool(forKey: "system_close_notifications") {
+                shouldRequestPushPermission()
+            } else {
+                requestRemoteConfiguration()
+            }
         }
     }
     
-    // MARK: - Мониторинг сети
     private func startNetworkObservation() {
         networkMonitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
@@ -106,7 +107,6 @@ final class BootstrapOrchestrator: ObservableObject {
         }
     }
     
-    // MARK: - Органическая проверка
     private func initiateOrganicVerification() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             Task { await self.executeOrganicCheck() }
@@ -142,7 +142,7 @@ final class BootstrapOrchestrator: ObservableObject {
             return
         }
         
-        var enriched: [AnyHashable: Any] = attributionPayload
+        var enriched: [AnyHashable: Any] = json
         for (k, v) in deepLinkCache where enriched[k] == nil {
             enriched[k] = v
         }
@@ -160,13 +160,13 @@ final class BootstrapOrchestrator: ObservableObject {
         }
         
         var bodyDict = attributionPayload
-        bodyDict["af_id"] = AppsFlyerLib.shared().getAppsFlyerUID()
-        bodyDict["bundle_id"] = Bundle.main.bundleIdentifier ?? "com.unknown.app"
         bodyDict["os"] = "iOS"
-        bodyDict["store_id"] = "id\(AppConstants.appsFlyerAppID)"
-        bodyDict["locale"] = Locale.preferredLanguages.first?.prefix(2).uppercased() ?? "EN"
-        bodyDict["push_token"] = UserDefaults.standard.string(forKey: "fcm_token") ?? Messaging.messaging().fcmToken
+        bodyDict["af_id"] = AppsFlyerLib.shared().getAppsFlyerUID()
+        bodyDict["bundle_id"] = "com.alarmsapp.ChickAlarm"
         bodyDict["firebase_project_id"] = FirebaseApp.app()?.options.gcmSenderID
+        bodyDict["store_id"] = "id\(AppConstants.appsFlyerAppID)"
+        bodyDict["push_token"] = UserDefaults.standard.string(forKey: "fcm_token") ?? Messaging.messaging().fcmToken
+        bodyDict["locale"] = Locale.preferredLanguages.first?.prefix(2).uppercased() ?? "EN"
         
         guard let httpBody = try? JSONSerialization.data(withJSONObject: bodyDict) else {
             fallbackToCachedOrLegacy()
@@ -179,22 +179,24 @@ final class BootstrapOrchestrator: ObservableObject {
         req.httpBody = httpBody
         
         URLSession.shared.dataTask(with: req) { [weak self] data, response, error in
-            guard let self = self,
-                  error == nil,
-                  let data = data,
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let ok = json["ok"] as? Bool, ok,
-                  let rawURL = json["url"] as? String,
-                  let expires = json["expires"] as? TimeInterval
+            if error != nil || data == nil {
+                self?.fallbackToCachedOrLegacy()
+                return
+            }
+            
+            guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any],
+                let okValid = json["ok"] as? Bool, okValid,
+                let resultData = json["url"] as? String,
+                let expires = json["expires"] as? TimeInterval
             else {
                 self?.fallbackToCachedOrLegacy()
                 return
             }
             
             DispatchQueue.main.async {
-                self.saveValidConfiguration(url: rawURL, expiresIn: expires)
-                self.targetWebURL = URL(string: rawURL)
-                self.moveTo(.webContainer)
+                self?.saveValidConfiguration(url: resultData, expiresIn: expires)
+                self?.targetWebURL = URL(string: resultData)
+                self?.moveTo(.webContainer)
             }
         }.resume()
     }
@@ -222,11 +224,12 @@ final class BootstrapOrchestrator: ObservableObject {
         moveTo(.legacyMode)
     }
     
-    private func shouldRequestPushPermission() -> Bool {
-        guard let lastAsk = UserDefaults.standard.object(forKey: "last_notification_ask") as? Date else {
-            return true
+    private func shouldRequestPushPermission() {
+        if let lastCheck = UserDefaults.standard.value(forKey: "last_notification_ask") as? Date,
+           Date().timeIntervalSince(lastCheck) < 259200 {
+            requestRemoteConfiguration()
         }
-        return Date().timeIntervalSince(lastAsk) >= 259200
+        shouldShowPushPrompt = true
     }
     
     func declinePushPrompt() {
