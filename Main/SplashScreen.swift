@@ -319,7 +319,7 @@ struct SplashScreen: View {
             EmptyView()
         case .webContainer:
             if orchestrator.targetWebURL != nil {
-                RootFarmInterface()
+                BirdHenAlarm()
             } else {
                 MainView()
             }
@@ -351,11 +351,43 @@ struct SplashView: View {
                         .shadow(color: Color(hex: "#456CE1"), radius: 1, x: 1, y: 0)
                         .shadow(color: Color(hex: "#456CE1"), radius: 1, x: 0, y: 1)
                         .shadow(color: Color(hex: "#456CE1"), radius: 1, x: 0, y: -1)
+                    InfiniteLinearProgressBar()
+                        .frame(width: 350)
                     Spacer().frame(height: 80)
                 }
             }
         }
         .ignoresSafeArea()
+    }
+}
+
+struct InfiniteLinearProgressBar: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                // Трек (фон)
+                Capsule()
+                    .fill(Color(.systemGray4))
+                
+                // Движущаяся полоса
+                Capsule()
+                    .fill(.white) // или любой цвет: Color.blue, .purple и т.д.
+                    .frame(width: geometry.size.width * 0.3) // 30% ширины — оптимально
+                    .offset(x: isAnimating ? geometry.size.width : -geometry.size.width * 0.4)
+                    .animation(
+                        Animation.linear(duration: 1.6)
+                            .repeatForever(autoreverses: false),
+                        value: isAnimating
+                    )
+            }
+        }
+        .frame(height: 5) // толщина полоски
+        .cornerRadius(2.5)
+        .onAppear {
+            isAnimating = true
+        }
     }
 }
 

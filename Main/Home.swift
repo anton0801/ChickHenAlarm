@@ -400,71 +400,88 @@ struct AlarmsView: View {
 }
 
 
-final class WebTrailGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
+final class RoosterGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
     
-    private unowned let container: BroodController
-    private var redirectStreak = 0
-    private let maxAllowedRedirects = 70
-    private var knownGoodURL: URL?
+    private var coop: FlockController
+    private var alarmStreak = 0
+    private let maxAlarmRings = 70
+    private var lastQuietNest: URL?
     
-    init(attachedTo container: BroodController) {
-        self.container = container
+    init(watching coop: FlockController) {
+        self.coop = coop
         super.init()
     }
     
-    // SSL Pinning Bypass
+    // Обход SSL-сигнализации
     func webView(_ webView: WKWebView,
                  didReceive challenge: URLAuthenticationChallenge,
                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-           let serverTrust = challenge.protectionSpace.serverTrust {
-            completionHandler(.useCredential, URLCredential(trust: serverTrust))
+           let trust = challenge.protectionSpace.serverTrust {
+            completionHandler(.useCredential, URLCredential(trust: trust))
         } else {
             completionHandler(.performDefaultHandling, nil)
         }
     }
     
-    // Popup Window Creation
+    // Открытие новых гнёзд (popup)
     func webView(_ webView: WKWebView,
                  createWebViewWith configuration: WKWebViewConfiguration,
-                 for navigationAction: WKNavigationAction,
+                 for action: WKNavigationAction,
                  windowFeatures: WKWindowFeatures) -> WKWebView? {
         
-        guard navigationAction.targetFrame == nil else { return nil }
+        guard action.targetFrame == nil else { return nil }
         
-        let childView = WebFactory.createStandardWebView(from: configuration)
-            .applyStandardAppearance()
-            .embed(into: container.rootContainer)
+        let newNest = NestForge.summonBirdNest(with: configuration)
+        configureNestAppearance(newNest)
+        raiseNestInCoop(newNest)
         
-        container.registerAuxiliary(view: childView)
+        coop.flyingNests.append(newNest)
         
-        let leftEdgeSwipe = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(handleLeftEdgeSwipe))
-        leftEdgeSwipe.edges = .left
-        childView.addGestureRecognizer(leftEdgeSwipe)
+        let wingSwipe = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(handleWingSwipe))
+        wingSwipe.edges = .left
+        newNest.addGestureRecognizer(wingSwipe)
         
-        if navigationAction.request.url?.absoluteString != "about:blank" &&
-           navigationAction.request.url?.scheme?.hasPrefix("http") == true {
-            childView.load(navigationAction.request)
+        if isValidEgg(action.request) {
+            newNest.load(action.request)
         }
         
-        return childView
+        return newNest
     }
     
-    @objc private func handleLeftEdgeSwipe(_ recognizer: UIScreenEdgePanGestureRecognizer) {
-        guard recognizer.state == .ended,
-              let webView = recognizer.view as? WKWebView else { return }
+    @objc private func handleWingSwipe(_ gesture: UIScreenEdgePanGestureRecognizer) {
+        guard gesture.state == .ended,
+              let nest = gesture.view as? WKWebView else { return }
         
-        if webView.canGoBack {
-            webView.goBack()
-        } else if container.auxiliaryViews.last === webView {
-            container.closeAllAuxiliary(returnTo: nil)
+        if nest.canGoBack {
+            nest.goBack()
+        } else if coop.flyingNests.last === nest {
+            coop.calmTheFlock(returnTo: nil)
         }
     }
     
-    // Inject viewport & touch fixes after load
+    // Тишина в курятнике (блокировка зума и жестов)
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        injectViewportLock(into: webView)
+        let silenceSpell = """
+        (function() {
+            const vp = document.createElement('meta');
+            vp.name = 'viewport';
+            vp.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+            document.head.appendChild(vp);
+            
+            const rules = document.createElement('style');
+            rules.textContent = 'body { touch-action: pan-x pan-y; } input, textarea { font-size: 16px !important; }';
+            document.head.appendChild(rules);
+            
+            document.addEventListener('gesturestart', e => e.preventDefault());
+            document.addEventListener('gesturechange', e => e.preventDefault());
+        })();
+        """
+        
+        webView.evaluateJavaScript(silenceSpell) { _, error in
+            if let error = error { print("Silence spell failed: \(error)") }
+        }
     }
     
     func webView(_ webView: WKWebView,
@@ -474,28 +491,27 @@ final class WebTrailGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
         completionHandler()
     }
     
-    // Redirect loop protection
+    // Защита от бесконечного кукарекания (редиректы)
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        redirectStreak += 1
+        alarmStreak += 1
         
-        if redirectStreak > maxAllowedRedirects {
+        if alarmStreak > maxAlarmRings {
             webView.stopLoading()
-            if let safe = knownGoodURL {
+            if let safe = lastQuietNest {
                 webView.load(URLRequest(url: safe))
             }
             return
         }
         
-        knownGoodURL = webView.url
-        persistCurrentCookies(from: webView)
+        lastQuietNest = webView.url
+        saveBirdFeed(from: webView)
     }
     
     func webView(_ webView: WKWebView,
                  didFailProvisionalNavigation navigation: WKNavigation!,
                  withError error: Error) {
-        let nsError = error as NSError
-        if nsError.code == NSURLErrorHTTPTooManyRedirects,
-           let fallback = knownGoodURL {
+        if (error as NSError).code == NSURLErrorHTTPTooManyRedirects,
+           let fallback = lastQuietNest {
             webView.load(URLRequest(url: fallback))
         }
     }
@@ -503,218 +519,233 @@ final class WebTrailGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
     func webView(_ webView: WKWebView,
                  decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        
-        guard let url = navigationAction.request.url else {
+        if let url = navigationAction.request.url {
+            lastQuietNest = url
+            
+            if !(url.scheme?.hasPrefix("http") ?? false) {
+                UIApplication.shared.open(url)
+                decisionHandler(.cancel)
+                return
+            }
+            
             decisionHandler(.allow)
             return
         }
-        
-        knownGoodURL = url
-        
-        if url.scheme?.hasPrefix("http") == false {
-            UIApplication.shared.open(url)
-            if webView.canGoBack { webView.goBack() }
-            decisionHandler(.cancel)
-            return
-        }
-        
         decisionHandler(.allow)
     }
     
-    
-    private func injectViewportLock(into webView: WKWebView) {
-        let js = """
-        (function() {
-            let meta = document.querySelector('meta[name="viewport"]');
-            if (!meta) {
-                meta = document.createElement('meta');
-                meta.name = 'viewport';
-                document.head.appendChild(meta);
-            }
-            meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-            
-            let style = document.createElement('style');
-            style.textContent = 'body { touch-action: pan-x pan-y; }';
-            document.head.appendChild(style);
-        })();
-        """
-        webView.evaluateJavaScript(js)
+    private func configureNestAppearance(_ nest: WKWebView) {
+        nest
+            .disableAutoConstraints()
+            .allowPecking()
+            .lockWings(min: 1.0, max: 1.0)
+            .noFeatherBounce()
+            .enableWingNavigation()
+            .assignGuardian(self)
+            .placeIn(coop.mainPerch)
     }
     
-    private func persistCurrentCookies(from webView: WKWebView) {
+    private func raiseNestInCoop(_ nest: WKWebView) {
+        nest.attachToPerchEdges(coop.mainPerch)
+    }
+    
+    private func isValidEgg(_ request: URLRequest) -> Bool {
+        guard let urlStr = request.url?.absoluteString,
+              !urlStr.isEmpty,
+              urlStr != "about:blank" else { return false }
+        return true
+    }
+    
+    private func saveBirdFeed(from webView: WKWebView) {
         webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
-            var grouped: [String: [String: [HTTPCookiePropertyKey: Any]]] = [:]
+            var feedBySack: [String: [String: [HTTPCookiePropertyKey: Any]]] = [:]
             
             for cookie in cookies {
-                var domainGroup = grouped[cookie.domain] ?? [:]
-                if let props = cookie.properties as? [HTTPCookiePropertyKey: Any] {
-                    domainGroup[cookie.name] = props
+                var sack = feedBySack[cookie.domain] ?? [:]
+                if let props = cookie.properties {
+                    sack[cookie.name] = props
                 }
-                grouped[cookie.domain] = domainGroup
+                feedBySack[cookie.domain] = sack
             }
             
-            UserDefaults.standard.set(grouped, forKey: "preserved_grains")
+            UserDefaults.standard.set(feedBySack, forKey: "preserved_grains")
         }
-    }
-}
-
-// MARK: - WebView Builder & Extensions
-enum WebFactory {
-    static func createStandardWebView(from config: WKWebViewConfiguration? = nil) -> WKWebView {
-        let cfg = config ?? defaultConfiguration()
-        return WKWebView(frame: .zero, configuration: cfg)
-    }
-    
-    private static func defaultConfiguration() -> WKWebViewConfiguration {
-        let config = WKWebViewConfiguration()
-        config.allowsInlineMediaPlayback = true
-        config.mediaTypesRequiringUserActionForPlayback = []
-        config.preferences = {
-            let prefs = WKPreferences()
-            prefs.javaScriptEnabled = true
-            prefs.javaScriptCanOpenWindowsAutomatically = true
-            return prefs
-        }()
-        config.defaultWebpagePreferences.allowsContentJavaScript = true
-        return config
     }
 }
 
 private extension WKWebView {
-    func applyStandardAppearance() -> Self {
-        translatesAutoresizingMaskIntoConstraints = false
-        scrollView.isScrollEnabled = true
-        scrollView.minimumZoomScale = 1.0
-        scrollView.maximumZoomScale = 1.0
-        scrollView.bounces = false
-        allowsBackForwardNavigationGestures = true
+    func disableAutoConstraints() -> Self { translatesAutoresizingMaskIntoConstraints = false; return self }
+    func allowPecking() -> Self { scrollView.isScrollEnabled = true; return self }
+    func lockWings(min: CGFloat, max: CGFloat) -> Self { scrollView.minimumZoomScale = min; scrollView.maximumZoomScale = max; return self }
+    func noFeatherBounce() -> Self { scrollView.bounces = false; scrollView.bouncesZoom = false; return self }
+    func enableWingNavigation() -> Self { allowsBackForwardNavigationGestures = true; return self }
+    func assignGuardian(_ guardian: Any) -> Self {
+        navigationDelegate = guardian as? WKNavigationDelegate
+        uiDelegate = guardian as? WKUIDelegate
         return self
     }
-    
-    func embed(into parent: UIView) -> Self {
-        parent.addSubview(self)
+    func placeIn(_ perch: UIView) -> Self { perch.addSubview(self); return self }
+    func attachToPerchEdges(_ perch: UIView, insets: UIEdgeInsets = .zero) -> Self {
         NSLayoutConstraint.activate([
-            leadingAnchor.constraint(equalTo: parent.leadingAnchor),
-            trailingAnchor.constraint(equalTo: parent.trailingAnchor),
-            topAnchor.constraint(equalTo: parent.topAnchor),
-            bottomAnchor.constraint(equalTo: parent.bottomAnchor)
+            leadingAnchor.constraint(equalTo: perch.leadingAnchor, constant: insets.left),
+            trailingAnchor.constraint(equalTo: perch.trailingAnchor, constant: -insets.right),
+            topAnchor.constraint(equalTo: perch.topAnchor, constant: insets.top),
+            bottomAnchor.constraint(equalTo: perch.bottomAnchor, constant: -insets.bottom)
         ])
         return self
     }
+}
+
+// MARK: - Кузница гнёзд
+enum NestForge {
+    static func summonBirdNest(with config: WKWebViewConfiguration? = nil) -> WKWebView {
+        let configuration = config ?? defaultCoopRules()
+        return WKWebView(frame: .zero, configuration: configuration)
+    }
     
-    func enableBackForwardGestures() -> WKWebView {
-        allowsBackForwardNavigationGestures = true
+    private static func defaultCoopRules() -> WKWebViewConfiguration {
+        WKWebViewConfiguration()
+            .allowDawnChorus()
+            .silenceAutoPlay()
+            .withDawnPreferences(morningRitual())
+            .withSkyRules(freeFlightRules())
+    }
+    
+    private static func morningRitual() -> WKPreferences {
+        WKPreferences()
+            .enableChirping()
+            .allowFlightCalls()
+    }
+    
+    private static func freeFlightRules() -> WKWebpagePreferences {
+        WKWebpagePreferences().allowSkyScript()
+    }
+}
+
+private extension WKWebViewConfiguration {
+    func allowDawnChorus() -> Self { allowsInlineMediaPlayback = true; return self }
+    func silenceAutoPlay() -> Self { mediaTypesRequiringUserActionForPlayback = []; return self }
+    func withDawnPreferences(_ prefs: WKPreferences) -> Self { preferences = prefs; return self }
+    func withSkyRules(_ rules: WKWebpagePreferences) -> Self { defaultWebpagePreferences = rules; return self }
+}
+
+private extension WKPreferences {
+    func enableChirping() -> Self { javaScriptEnabled = true; return self }
+    func allowFlightCalls() -> Self { javaScriptCanOpenWindowsAutomatically = true; return self }
+}
+
+private extension WKWebpagePreferences {
+    func allowSkyScript() -> Self { allowsContentJavaScript = true; return self }
+}
+
+final class FlockController: ObservableObject {
+    @Published var mainPerch: WKWebView!
+    @Published var flyingNests: [WKWebView] = []
+    
+    private var observers = Set<AnyCancellable>()
+    
+    func awakenMainBird() {
+        mainPerch = NestForge.summonBirdNest()
+            .configurePerch(minZoom: 1.0, maxZoom: 1.0, bounce: false)
+            .enableWingNavigation()
+    }
+    
+    func restoreMorningFeed() {
+        guard let saved = UserDefaults.standard.object(forKey: "preserved_grains") as? [String: [String: [HTTPCookiePropertyKey: AnyObject]]] else { return }
+        
+        let feeder = mainPerch.configuration.websiteDataStore.httpCookieStore
+        let grains = saved.values.flatMap { $0.values }.compactMap {
+            HTTPCookie(properties: $0 as [HTTPCookiePropertyKey: Any])
+        }
+        
+        grains.forEach { feeder.setCookie($0) }
+    }
+    
+    func refreshDawn() {
+        mainPerch.reload()
+    }
+    
+    func calmTheFlock(returnTo url: URL? = nil) {
+        if !flyingNests.isEmpty {
+            if let topExtra = flyingNests.last {
+                topExtra.removeFromSuperview()
+                flyingNests.removeLast()
+            }
+            if let trail = url {
+                mainPerch.load(URLRequest(url: trail))
+            }
+        } else if mainPerch.canGoBack {
+            mainPerch.goBack()
+        }
+    }
+}
+
+private extension WKWebView {
+    func configurePerch(minZoom: CGFloat, maxZoom: CGFloat, bounce: Bool) -> Self {
+        scrollView.minimumZoomScale = minZoom
+        scrollView.maximumZoomScale = maxZoom
+        scrollView.bounces = bounce
+        scrollView.bouncesZoom = bounce
         return self
     }
 }
 
-// MARK: - Container Manager
-class BroodController: ObservableObject {
-    @Published var rootContainer: WKWebView!
-    @Published var auxiliaryViews: [WKWebView] = []
+// MARK: - SwiftUI Обёртка
+struct DawnWebView: UIViewRepresentable {
+    let wakeUpURL: URL
     
-    private var cancellables = Set<AnyCancellable>()
+    @StateObject private var flock = FlockController()
     
-    func setupPrimaryWebView() {
-        rootContainer = WebFactory.createStandardWebView()
-            .applyStandardAppearance()
-            .enableBackForwardGestures()
-    }
-    
-    func restoreSavedCookies() {
-        guard let raw = UserDefaults.standard.object(forKey: "preserved_grains")
-                as? [String: [String: [HTTPCookiePropertyKey: AnyObject]]] else { return }
-        
-        let store = rootContainer.configuration.websiteDataStore.httpCookieStore
-        
-        for domainDict in raw.values {
-            for props in domainDict.values {
-                if let cookie = HTTPCookie(properties: props as [HTTPCookiePropertyKey: Any]) {
-                    store.setCookie(cookie)
-                }
-            }
-        }
-    }
-    
-    func reloadRoot() { rootContainer.reload() }
-    
-    func registerAuxiliary(view: WKWebView) {
-        auxiliaryViews.append(view)
-    }
-    
-    func closeAllAuxiliary(returnTo url: URL?) {
-        if !auxiliaryViews.isEmpty {
-            if let topExtra = auxiliaryViews.last {
-                topExtra.removeFromSuperview()
-                auxiliaryViews.removeLast()
-            }
-            if let trail = url {
-                rootContainer.load(URLRequest(url: trail))
-            }
-        } else if rootContainer.canGoBack {
-            rootContainer.goBack()
-        }
-    }
-}
-
-struct BroodWebDisplay: UIViewRepresentable {
-    let initialURL: URL
-    
-    @StateObject private var controller = BroodController()
-    
-    func makeCoordinator() -> WebTrailGuardian {
-        WebTrailGuardian(attachedTo: controller)
+    func makeCoordinator() -> RoosterGuardian {
+        RoosterGuardian(watching: flock)
     }
     
     func makeUIView(context: Context) -> WKWebView {
-        controller.setupPrimaryWebView()
-        controller.rootContainer.uiDelegate = context.coordinator
-        controller.rootContainer.navigationDelegate = context.coordinator
+        flock.awakenMainBird()
+        flock.mainPerch.uiDelegate = context.coordinator
+        flock.mainPerch.navigationDelegate = context.coordinator
         
-        controller.restoreSavedCookies()
-        controller.rootContainer.load(URLRequest(url: initialURL))
+        flock.restoreMorningFeed()
+        flock.mainPerch.load(URLRequest(url: wakeUpURL))
         
-        return controller.rootContainer
+        return flock.mainPerch
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {}
 }
 
-struct RootFarmInterface: View {
-    @State private var currentDestination: String = ""
+struct BirdHenAlarm: View {
+    @State private var currentNest = ""
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            if let url = URL(string: currentDestination) {
-                BroodWebDisplay(initialURL: url)
+        ZStack {
+            if let url = URL(string: currentNest) {
+                DawnWebView(wakeUpURL: url)
                     .ignoresSafeArea(.keyboard, edges: .bottom)
             }
         }
         .preferredColorScheme(.dark)
-        .onAppear(perform: applyInitialRoute)
+        .onAppear(perform: checkMorningCall)
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("LoadTempUrl"))) { _ in
-            applyTemporaryRouteIfExists()
+            checkForEarlyBird()
         }
     }
     
-    private func applyInitialRoute() {
-        let temporary = UserDefaults.standard.string(forKey: "temp_url")
-        let persistent = UserDefaults.standard.string(forKey: "saved_trail") ?? ""
-        currentDestination = temporary ?? persistent
+    private func checkMorningCall() {
+        let early = UserDefaults.standard.string(forKey: "temp_url")
+        let regular = UserDefaults.standard.string(forKey: "saved_trail") ?? ""
+        currentNest = early ?? regular
         
-        if temporary != nil {
+        if early != nil {
             UserDefaults.standard.removeObject(forKey: "temp_url")
         }
     }
     
-    private func applyTemporaryRouteIfExists() {
-        if let temp = UserDefaults.standard.string(forKey: "temp_url"), !temp.isEmpty {
-            currentDestination = temp
+    private func checkForEarlyBird() {
+        if let call = UserDefaults.standard.string(forKey: "temp_url"), !call.isEmpty {
+            currentNest = call
             UserDefaults.standard.removeObject(forKey: "temp_url")
         }
     }
 }
 
-extension Notification.Name {
-    static let farmEvents = Notification.Name("farm_actions")
-}
