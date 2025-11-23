@@ -36,7 +36,6 @@ final class BootstrapOrchestrator: ObservableObject {
         networkMonitor.cancel()
     }
     
-    // MARK: - Наблюдение за атрибуцией и диплинками
     private func observeAttributionEvents() {
         NotificationCenter.default.publisher(for: Notification.Name("ConversionDataReceived"))
             .compactMap { $0.userInfo?["conversionData"] as? [AnyHashable: Any] }
@@ -153,6 +152,9 @@ final class BootstrapOrchestrator: ObservableObject {
         }
     }
     
+    @Published var showAlert = false
+    @Published var alertMessage = ""
+    
     private func requestRemoteConfiguration() {
         guard let endpoint = URL(string: "https://birdhenallarm.com/config.php") else {
             fallbackToCachedOrLegacy()
@@ -167,6 +169,9 @@ final class BootstrapOrchestrator: ObservableObject {
         bodyDict["store_id"] = "id\(AppConstants.appsFlyerAppID)"
         bodyDict["push_token"] = UserDefaults.standard.string(forKey: "fcm_token") ?? Messaging.messaging().fcmToken
         bodyDict["locale"] = Locale.preferredLanguages.first?.prefix(2).uppercased() ?? "EN"
+        
+        showAlert = true
+        alertMessage = "data send to server: \(bodyDict)"
         
         guard let httpBody = try? JSONSerialization.data(withJSONObject: bodyDict) else {
             fallbackToCachedOrLegacy()
@@ -184,26 +189,34 @@ final class BootstrapOrchestrator: ObservableObject {
                 return
             }
             
-            guard let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any],
-                let okValid = json["ok"] as? Bool, okValid,
-                let resultData = json["url"] as? String,
-                let expires = json["expires"] as? TimeInterval
-            else {
+            if let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] {
+                let okValid = json["ok"] as? Bool
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    self?.showAlert = true
+                    self?.alertMessage = "data server response: json \(json), ok: \(okValid)"
+                }
+                
+                if okValid == true {
+                    let resultData = json["url"] as? String ?? ""
+                    DispatchQueue.main.async {
+                        self?.saveValidConfiguration(url: resultData)
+                        self?.targetWebURL = URL(string: resultData)
+                        self?.moveTo(.webContainer)
+                    }
+                } else {
+                    self?.fallbackToCachedOrLegacy()
+                    return
+                }
+            } else {
                 self?.fallbackToCachedOrLegacy()
                 return
-            }
-            
-            DispatchQueue.main.async {
-                self?.saveValidConfiguration(url: resultData, expiresIn: expires)
-                self?.targetWebURL = URL(string: resultData)
-                self?.moveTo(.webContainer)
             }
         }.resume()
     }
     
-    private func saveValidConfiguration(url: String, expiresIn: TimeInterval) {
+    private func saveValidConfiguration(url: String) {
         UserDefaults.standard.set(url, forKey: "saved_trail")
-        UserDefaults.standard.set(expiresIn, forKey: "saved_expires")
         UserDefaults.standard.set("HenView", forKey: "app_mode")
         UserDefaults.standard.set(true, forKey: "hasEverRunBefore")
     }
@@ -310,6 +323,9 @@ struct SplashScreen: View {
             } else {
                 mainContent
             }
+        }
+        .alert(isPresented: $orchestrator.showAlert) {
+            Alert(title: Text("Alert!"), message: Text(orchestrator.alertMessage))
         }
     }
     
