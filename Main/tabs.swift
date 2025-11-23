@@ -17,7 +17,6 @@ class ApplicationDelegate: UIResponder, UIApplicationDelegate, AppsFlyerLibDeleg
     
     private var mergeTimer: Timer?
     
-    
     func application(
         _ application: UIApplication,
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],

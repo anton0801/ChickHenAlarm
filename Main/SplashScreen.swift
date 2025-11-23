@@ -228,6 +228,7 @@ final class BootstrapOrchestrator: ObservableObject {
         if let lastCheck = UserDefaults.standard.value(forKey: "last_notification_ask") as? Date,
            Date().timeIntervalSince(lastCheck) < 259200 {
             requestRemoteConfiguration()
+            return
         }
         shouldShowPushPrompt = true
     }
