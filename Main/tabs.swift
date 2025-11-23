@@ -78,7 +78,7 @@ class ApplicationDelegate: UIResponder, UIApplicationDelegate, AppsFlyerLibDeleg
     
     private func fireMergedTimer() {
         mergeTimer?.invalidate()
-        mergeTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { [weak self] _ in
+        mergeTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: false) { [weak self] _ in
             self?.sendMergedDataTOSplash()
         }
     }
@@ -97,7 +97,9 @@ class ApplicationDelegate: UIResponder, UIApplicationDelegate, AppsFlyerLibDeleg
     func onConversionDataSuccess(_ data: [AnyHashable: Any]) {
         attrData = data
         fireMergedTimer()
-        sendMergedDataTOSplash()
+        if !deepLinkClickEvent.isEmpty {
+            sendMergedDataTOSplash()
+        }
     }
     
     func didResolveDeepLink(_ result: DeepLinkResult) {
@@ -112,11 +114,12 @@ class ApplicationDelegate: UIResponder, UIApplicationDelegate, AppsFlyerLibDeleg
         
         mergeTimer?.invalidate()
         
-        sendMergedDataTOSplash()
+        if !attrData.isEmpty {
+            sendMergedDataTOSplash()
+        }
     }
     
     func onConversionDataFail(_ error: Error) {
-        print("AppsFlyer attribution failed: \(error.localizedDescription)")
         broadcastAttributionUpdate(data: [:])
     }
     
