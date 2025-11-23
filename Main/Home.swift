@@ -430,7 +430,6 @@ final class RoosterGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
                  createWebViewWith configuration: WKWebViewConfiguration,
                  for action: WKNavigationAction,
                  windowFeatures: WKWindowFeatures) -> WKWebView? {
-        
         guard action.targetFrame == nil else { return nil }
         
         let newNest = NestForge.summonBirdNest(with: configuration)
@@ -446,6 +445,7 @@ final class RoosterGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
         if isValidEgg(action.request) {
             newNest.load(action.request)
         }
+//        newNest.load(action.request)
         
         return newNest
     }
@@ -519,19 +519,51 @@ final class RoosterGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
     func webView(_ webView: WKWebView,
                  decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        if let url = navigationAction.request.url {
-            lastQuietNest = url
-            
-            if !(url.scheme?.hasPrefix("http") ?? false) {
-                UIApplication.shared.open(url)
-                decisionHandler(.cancel)
-                return
-            }
-            
+        
+        //        if let url = navigationAction.request.url {
+        //            lastQuietNest = url
+        //
+        //            if !(url.scheme?.hasPrefix("http") ?? false) {
+        //                // UIApplication.shared.open(url)
+        //                decisionHandler(.allow)
+        //                return
+        //            }
+        //
+        //            decisionHandler(.allow)
+        //            return
+        //        }
+        //        decisionHandler(.allow)
+        
+        guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
         }
-        decisionHandler(.allow)
+        
+        lastQuietNest = url
+        
+        let scheme = (url.scheme ?? "").lowercased()
+        let urlString = url.absoluteString.lowercased()
+        
+        let mustStayInWebView: Set<String> = ["http", "https", "about", "blob", "data", "javascript", "file"]
+        let mustStayPrefixes = ["srcdoc", "about:blank", "about:srcdoc"]
+        
+        let shouldStayInWebView = mustStayInWebView.contains(scheme) ||
+        mustStayPrefixes.contains { urlString.hasPrefix($0) } ||
+        urlString == "about:blank"
+        
+        if shouldStayInWebView {
+            decisionHandler(.allow)
+            return
+        }
+        
+        UIApplication.shared.open(url, options: [:]) { success in
+            // Можно залогировать, если интересно
+            if !success {
+                print("Failed to open external URL: \(url)")
+            }
+        }
+        
+        decisionHandler(.cancel)
     }
     
     private func configureNestAppearance(_ nest: WKWebView) {
@@ -570,6 +602,19 @@ final class RoosterGuardian: NSObject, WKNavigationDelegate, WKUIDelegate {
             
             UserDefaults.standard.set(feedBySack, forKey: "preserved_grains")
         }
+    }
+}
+
+private extension URL {
+    var shouldOpenInWebView: Bool {
+        let scheme = (self.scheme ?? "").lowercased()
+        let str = self.absoluteString.lowercased()
+        
+        let allowedSchemes: Set<String> = ["http", "https", "about", "blob", "data", "javascript", "file"]
+        let allowedPrefixes = ["srcdoc", "about:blank", "about:srcdoc"]
+        
+        return allowedSchemes.contains(scheme) ||
+               allowedPrefixes.contains { str.hasPrefix($0) }
     }
 }
 
