@@ -152,9 +152,6 @@ final class BootstrapOrchestrator: ObservableObject {
         }
     }
     
-    @Published var showAlert = false
-    @Published var alertMessage = ""
-    
     private func requestRemoteConfiguration() {
         guard let endpoint = URL(string: "https://birdhenallarm.com/config.php") else {
             fallbackToCachedOrLegacy()
@@ -169,9 +166,6 @@ final class BootstrapOrchestrator: ObservableObject {
         bodyDict["store_id"] = "id\(AppConstants.appsFlyerAppID)"
         bodyDict["push_token"] = UserDefaults.standard.string(forKey: "fcm_token") ?? Messaging.messaging().fcmToken
         bodyDict["locale"] = Locale.preferredLanguages.first?.prefix(2).uppercased() ?? "EN"
-        
-        showAlert = true
-        alertMessage = "data send to server: \(bodyDict)"
         
         guard let httpBody = try? JSONSerialization.data(withJSONObject: bodyDict) else {
             fallbackToCachedOrLegacy()
@@ -191,12 +185,7 @@ final class BootstrapOrchestrator: ObservableObject {
             
             if let json = try? JSONSerialization.jsonObject(with: data!) as? [String: Any] {
                 let okValid = json["ok"] as? Bool
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    self?.showAlert = true
-                    self?.alertMessage = "data server response: json \(json), ok: \(okValid)"
-                }
-                
+
                 if okValid == true {
                     let resultData = json["url"] as? String ?? ""
                     DispatchQueue.main.async {
@@ -323,9 +312,6 @@ struct SplashScreen: View {
             } else {
                 mainContent
             }
-        }
-        .alert(isPresented: $orchestrator.showAlert) {
-            Alert(title: Text("Alert!"), message: Text(orchestrator.alertMessage))
         }
     }
     
