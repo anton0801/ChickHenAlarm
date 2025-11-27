@@ -16,7 +16,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "232"
             endingLineNumber = "232"
-            landmarkName = "switchToLegacy()"
+            landmarkName = "shouldRequestPushPermission()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -66,6 +66,36 @@
             endingLineNumber = "157"
             landmarkName = "requestRemoteConfiguration()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5B1E32E5-3770-4AAA-AA57-B64A2A7E996C - 6cfd03bd2792c51b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "chickenAlarm.BootstrapOrchestrator.requestRemoteConfiguration() -&gt; ()"
+                  moduleName = "chickenAlarm.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/antondanilov/Downloads/chickenAlarm/Main/SplashScreen.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "159"
+                  endingLineNumber = "159">
+               </Location>
+               <Location
+                  uuid = "5B1E32E5-3770-4AAA-AA57-B64A2A7E996C - 6cfd03bd2792c545"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "chickenAlarm.BootstrapOrchestrator.requestRemoteConfiguration() -&gt; ()"
+                  moduleName = "chickenAlarm.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/antondanilov/Downloads/chickenAlarm/Main/SplashScreen.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "157"
+                  endingLineNumber = "157">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -114,6 +144,36 @@
             endingLineNumber = "197"
             landmarkName = "requestRemoteConfiguration()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BA2C993C-8C9C-42A4-A2CC-D61B4FD7B1AD - 8b5f0dd23a37306"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in chickenAlarm.BootstrapOrchestrator.requestRemoteConfiguration() -&gt; ()"
+                  moduleName = "chickenAlarm.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/antondanilov/Downloads/chickenAlarm/Main/SplashScreen.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "197"
+                  endingLineNumber = "197">
+               </Location>
+               <Location
+                  uuid = "BA2C993C-8C9C-42A4-A2CC-D61B4FD7B1AD - 684363fec3355240"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in chickenAlarm.BootstrapOrchestrator.requestRemoteConfiguration() -&gt; ()"
+                  moduleName = "chickenAlarm.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/antondanilov/Downloads/chickenAlarm/Main/SplashScreen.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "197"
+                  endingLineNumber = "197">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
